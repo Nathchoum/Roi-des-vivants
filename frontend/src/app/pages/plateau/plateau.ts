@@ -6,4 +6,7 @@ import { Component } from '@angular/core';
   templateUrl: './plateau.html',
   styleUrl: './plateau.css',
 })
-export class PlateauComponent{}
+export class PlateauComponent{
+  
+  
+}
