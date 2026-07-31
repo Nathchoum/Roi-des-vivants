@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,5 +25,7 @@ public class Partie {
         this.joueurs = joueurs;
         this.pile = pile;
         this.tours = 1;
+        for(int i = 0;i<joueurs.size();i++) ordre.add(i);
+        Collections.shuffle(ordre);
     }
 }
