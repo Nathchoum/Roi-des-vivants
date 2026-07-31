@@ -7,13 +7,21 @@ import roivivant.Models.Partie;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class PartieService {
+    private final JoueurService joueurService;
+    private final CarteService carteService;
 
-    public Partie initPartie (ArrayList<Joueur> Joueurs){
-        CarteService carteService = new CarteService();
+    // Injection automatique des services par Spring Boot
+    public PartieService(JoueurService joueurService, CarteService carteService) {
+        this.joueurService = joueurService;
+        this.carteService = carteService;
+    }
+
+    public Partie initPartie (ArrayList<Joueur> joueurs){
         ArrayList<String> enseignes = new ArrayList<>();
         enseignes.add("coeur");
         enseignes.add("piques");
@@ -21,10 +29,18 @@ public class PartieService {
         enseignes.add("carreau");
         List<Carte> pile = carteService.generePool(40, enseignes);
 
-        return new Partie(Joueurs,pile);
+        Collections.shuffle(pile);
+
+        for (Joueur joueur : joueurs) {
+            if (!pile.isEmpty()) {
+                joueur.setCarte(pile.removeFirst());
+                joueur.setEtat("vivant");
+            }
+        }
+
+        return new Partie(joueurs,pile);
     }
 
-    JoueurService joueurService = new JoueurService();
 
     public void jouerUnTour(){
 
