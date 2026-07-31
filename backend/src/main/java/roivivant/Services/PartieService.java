@@ -21,7 +21,7 @@ public class PartieService {
         this.carteService = carteService;
     }
 
-    public Partie initPartie (ArrayList<Joueur> joueurs){
+    public Partie initPartie (List<Joueur> joueurs){
         ArrayList<String> enseignes = new ArrayList<>();
         enseignes.add("coeur");
         enseignes.add("piques");
