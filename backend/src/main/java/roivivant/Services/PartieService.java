@@ -32,17 +32,13 @@ public class PartieService {
         Collections.shuffle(pile);
 
         int nbjoueurs = joueurs.size();
-        int elu = (int) (Math.random() * nbjoueurs);
+        int postjoker = (int) (Math.random() * nbjoueurs);
+        Carte joker = new Carte(11,null);
+        pile.set(postjoker,joker);
         for (int i = 0; i < nbjoueurs; i++) {
             Joueur joueur = joueurs.get(i);
             joueur.setEtat("vivant");
-            if (i == elu) {
-                // L'élu reçoit le Joker
-                joueur.setCarte(new Carte(11, "joker"));
-            } else if (!pile.isEmpty()) {
-                // Les autres reçoivent une carte de la pile
-                joueur.setCarte(pile.removeFirst());
-            }
+            joueur.setCarte(pile.removeFirst());
         }
 
         return new Partie(joueurs,pile);

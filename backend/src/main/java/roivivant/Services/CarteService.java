@@ -30,7 +30,6 @@ public class CarteService {
                 ArrayList<Carte> nouvelleFaction = genereFaction(facts.get(i));
                 Pool.addAll(nouvelleFaction);
             }
-            Pool.add(new Carte(11, "joker"));
             return Pool;
         }
         else{
