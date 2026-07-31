@@ -6,78 +6,78 @@ import roivivant.Models.Joueur;
 
 @Service
 public class JoueurService {
-    // /!\ IL FAUDRA IMPLEMENTER LES EFFETS DU JOUR ET DE LA NUIT LORSQUE NOUS POURRONS INITIALISER UNE PARTIE /!\
+    // /!\ TODO IL FAUDRA IMPLEMENTER LES EFFETS DU JOUR ET DE LA NUIT LORSQUE NOUS POURRONS INITIALISER UNE PARTIE /!\
 
     /**
-     * action permettant d'essayer de deviner la faction de la carte du joueur ciblé, si le joueur guess la faction dont sa carte fait parti, il meurt
-     * * @param joueur1, le joueur faisant l'action
-     * @param joueur2, le joueur ciblé
-     * @param guess, le guess du joueur1
+     * action permettant d'essayer de deviner la faction de la carte du joueur ciblé
+     * si le joueur guess la faction dont la carte de la cible fait partie, l'actionnaire meurt
+     * @param actionnaire, le joueur faisant l'action
+     * @param cible, le joueur ciblé
+     * @param guess, le guess de l'actionnaire
      * @return la réponse
      */
-    public String devinerFaction(Joueur joueur1, Joueur joueur2, String guess) {
-        if (joueur1.getCarte().getFaction().equals(guess)) {
-            joueur1.setEtat("mort");
-            return "il a tout whippin";
+    public String devinerFaction(Joueur actionnaire, Joueur cible, String guess) {
+        if (cible.getCarte().getFaction().equals(guess)) {
+            actionnaire.setEtat("mort");
+            return "bon";
         }
-        if (joueur2.getCarte().getFaction().equals(guess)) {
-            return "bravo c'est ça";
-        }
-        return "big looser";
+        return "faux";
     }
 
     /**
-     * action permettant de comparer les cartes des 2 joueurs
-     * * @param joueur1, le joueur qui lance l'action
-     * @param joueur2, le joueur choisit par joueur1
+     * action permettant de comparer les cartes de l'actionnaire et de la cible
+     * @param actionnaire, le joueur qui lance l'action
+     * @param cible, le joueur choisit par l'actionnaire
      * @return pour l'instant un string, à voir si on peut pas faire mieux par la suite
      */
-    public String comparer(Joueur joueur1, Joueur joueur2) {
-        if (joueur1.getCarte().getValeur() > joueur2.getCarte().getValeur()) {
-            return "Youpiii !";
+    public String comparer(Joueur actionnaire, Joueur cible) {
+        int valeurActionnaire = actionnaire.getCarte().getValeur();
+        int valeurCible = cible.getCarte().getValeur();
+        if (valeurCible > valeurActionnaire) {
+            return "pouce sur le haut";
         }
-        if (joueur1.getCarte().getValeur() < joueur2.getCarte().getValeur() || joueur2.getCarte().getValeur() == 11) {
-            return "Ouuuh.";
+        else if(valeurCible<valeurActionnaire) {
+            return "pouce sur le bas";
         }
-        return "bof";
+        else if (valeurCible==11) {
+            return "pouce sur le bas";
+        }
+        return "pouce sur le coté";
     }
 
     /**
-     * action permettant de tuer un autre joueur si le joueur lançant l'action a le bon guess, celui-ci peut échanger son rôle, garder le sien ou ressuciter.
-     * @param joueur1, joueur lançant l'action
-     * @param joueur2, joueur ciblé
+     * action permettant de tuer un autre joueur vivant, si l'actionnaire a le bon guess, celui-ci peut échanger son rôle, garder le sien ou ressuciter selon son état.
+     * @param actionnaire, joueur lançant l'action
+     * @param cible, joueur ciblé
      * @param guessValeur, guess de la valeur du joueur ciblé
      * @param guessFaction, guess de la faction du joueur ciblé
-     * @param veutEchanger, si joueur1 souhaite échanger son rôle
-     * @return
+     * @param veutEchanger, si actionnaire souhaite échanger son rôle avec la cible
+     * @return la réponse
      */
-    public String tuer(Joueur joueur1, Joueur joueur2, int guessValeur, String guessFaction, boolean veutEchanger) {
-        if ("mort".equals(joueur2.getEtat())) {
-            return "Action impossible : la cible est déjà morte.";
+    public String tuer(Joueur actionnaire, Joueur cible, int guessValeur, String guessFaction, boolean veutEchanger) {
+        if (cible.getEtat().equals("mort")) {
+            return "rien ne se passe...";
         }
-
-        boolean aBon = (joueur2.getCarte().getValeur() == guessValeur)
-                && guessFaction.equalsIgnoreCase(joueur2.getCarte().getFaction());
+        boolean aBon = (cible.getCarte().getValeur() == guessValeur)
+                && guessFaction.equalsIgnoreCase(cible.getCarte().getFaction());
 
         if (!aBon) {
-            return "Raté ! Le devinement est incorrect.";
+            return "rien ne se passe...";
         }
 
-        joueur2.setEtat("mort");
+        cible.setEtat("mort");
 
-        if ("vivant".equals(joueur1.getEtat())) {
+        if (actionnaire.getEtat().equals("vivant")) {
             if (veutEchanger) {
-                echangerCartesEtRoles(joueur1, joueur2);
+                echangerCartesEtRoles(actionnaire, cible);
                 return "8 morts 6 bléssés ! Joueur 1 a choisi d'échanger son rôle avec la cible.";
             }
             return "8 morts 6 bléssés  ! Joueur 1 conserve son rôle.";
-        } else if ("mort".equals(joueur1.getEtat())) {
-            echangerCartesEtRoles(joueur1, joueur2);
-            joueur1.setEtat("vivant");
+        } else {
+            echangerCartesEtRoles(actionnaire, cible);
+            actionnaire.setEtat("vivant");
             return "8 morts 6 bléssés  ! Joueur 1 ressuscite et prend le rôle de sa cible.";
         }
-
-        return "Erreur d'état du joueur.";
     }
 
     // Méthode utilitaire pour simplifier l'échange de cartes
@@ -86,16 +86,15 @@ public class JoueurService {
         j1.setCarte(j2.getCarte());
         j2.setCarte(temp);
     }
-
     /**
      * action permettant de regarder sa propre carte
-     * * @param joueur qui lance l'action
+     * @param actionnaire joueur qui lance l'action
      * @return la carte du joueur, s'il a le joker, il meurt
      */
-    public Carte regarderSaCarte(Joueur joueur) {
-        if (joueur.getCarte().getValeur() == 11) {
-            joueur.setEtat("mort");
+    public Carte regarderSaCarte(Joueur actionnaire) {
+        if (actionnaire.getCarte().getValeur() == 11) {
+            actionnaire.setEtat("mort");
         }
-        return joueur.getCarte();
+        return actionnaire.getCarte();
     }
 }

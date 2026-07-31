@@ -24,24 +24,26 @@ public class PartieService {
         return new Partie(Joueurs,pile);
     }
 
-    public String jouerUnTour(){
+    JoueurService joueurService = new JoueurService();
+
+    public void jouerUnTour(){
 
     }
 
-    public String jouerDevinerFaction(){
-
+    public void jouerDevinerFaction(Joueur actionnaire, Joueur cible, String guess){
+        joueurService.devinerFaction(actionnaire,cible,guess);
     }
 
-    public String jouerComparer(){
-
+    public void jouerComparer(Joueur actionnaire, Joueur cible){
+        joueurService.comparer(actionnaire,cible);
     }
 
-    public String jouerTuer(){
-
+    public void jouerTuer(Joueur actionnaire, Joueur cible, int guessValeur, String guessFaction, boolean veutEchanger){
+        joueurService.tuer(actionnaire, cible, guessValeur, guessFaction, veutEchanger);
     }
 
-    public String jouerRegarderSaCarte(){
-
+    public void jouerRegarderSaCarte(Joueur actionnaire){
+        joueurService.regarderSaCarte(actionnaire);
     }
 
 }
