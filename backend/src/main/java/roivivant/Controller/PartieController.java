@@ -26,15 +26,15 @@ public class PartieController {
 
     @PostMapping("/devinerFaction")
     public String devinerFaction(
+            @RequestParam Partie.Cycle cycle,
             @RequestBody Joueur[] duo,
             @RequestParam String guess) {
-        return partieService.jouerDevinerFaction(duo[0], duo[1], guess);
+        return partieService.jouerDevinerFaction(cycle,duo[0], duo[1], guess);
     }
 
-
     @PostMapping("/comparer") //TODO a voir si get ou post
-    public String comparer(@RequestBody Joueur[] duo) {
-        return partieService.jouerComparer(duo[0], duo[1]);
+    public String comparer(@RequestParam Partie.Cycle cycle,@RequestBody Joueur[] duo) {
+        return partieService.jouerComparer(cycle,duo[0], duo[1]);
     }
 
     @PostMapping("/tuer")

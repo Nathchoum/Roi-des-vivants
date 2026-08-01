@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 public class Partie {
     private UUID idPartie;
-    private String cycle;
+    private Cycle cycle;
     private List<Joueur> joueurs;
     private List<Carte> pile;
     private int tours;
@@ -22,7 +22,7 @@ public class Partie {
     // Constructeur pratique pour démarrer une nouvelle partie
     public Partie(List<Joueur> joueurs, List<Carte> pile) {
         this.idPartie = UUID.randomUUID(); // Génère l'UUID automatiquement
-        this.cycle = "JOUR";
+        this.cycle = Cycle.JOUR;
         this.joueurs = joueurs;
         this.pile = pile;
         this.tours = 1;
@@ -30,4 +30,9 @@ public class Partie {
         for(int i = 0;i<joueurs.size();i++) ordre.add(i);
         Collections.shuffle(ordre);
     }
+    public enum Cycle {
+        JOUR,
+        NUIT
+    }
 }
+

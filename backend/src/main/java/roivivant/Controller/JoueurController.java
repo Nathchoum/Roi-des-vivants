@@ -3,6 +3,7 @@ package roivivant.Controller;
 import org.springframework.web.bind.annotation.*;
 import roivivant.Models.Carte;
 import roivivant.Models.Joueur;
+import roivivant.Models.Partie;
 import roivivant.Services.JoueurService;
 
 @RestController
@@ -23,10 +24,11 @@ public class JoueurController {
      */
     @PostMapping("/deviner-faction")
     public String devinerFaction(
+            @RequestParam Partie.Cycle cycle,
             @RequestBody Joueur[] joueurs, // Un tableau contenant [joueur1, joueur2]
             @RequestParam String guess) {
 
-        return joueurService.devinerFaction(joueurs[0], joueurs[1], guess);
+        return joueurService.devinerFaction(cycle,joueurs[0], joueurs[1], guess);
     }
 
     /**
@@ -34,8 +36,8 @@ public class JoueurController {
      * URL : POST http://localhost:8080/api/joueurs/comparer
      */
     @PostMapping("/comparer")
-    public String comparer(@RequestBody Joueur[] joueurs) {
-        return joueurService.comparer(joueurs[0], joueurs[1]);
+    public String comparer(@RequestParam Partie.Cycle cycle,@RequestBody Joueur[] joueurs) {
+        return joueurService.comparer(cycle,joueurs[0], joueurs[1]);
     }
 
     /**

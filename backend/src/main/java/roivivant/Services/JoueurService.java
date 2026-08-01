@@ -3,6 +3,9 @@ package roivivant.Services;
 import org.springframework.stereotype.Service;
 import roivivant.Models.Carte;
 import roivivant.Models.Joueur;
+import roivivant.Models.Partie;
+
+import java.util.Objects;
 
 @Service
 public class JoueurService {
@@ -16,9 +19,13 @@ public class JoueurService {
      * @param guess, le guess de l'actionnaire
      * @return la réponse
      */
-    public String devinerFaction(Joueur actionnaire, Joueur cible, String guess) {
+    public String devinerFaction(Partie.Cycle cycle, Joueur actionnaire, Joueur cible, String guess) {
+        if(cycle== Partie.Cycle.JOUR && actionnaire.getCarte()==Carte.Joker){
+            echangerCartesEtRoles(actionnaire,cible);
+            return "faux";
+        }
         if (cible.getCarte().getFaction().equals(guess)) {
-            actionnaire.setEtat("mort");
+            actionnaire.setEtat(Joueur.Etat.MORT);
             return "bon";
         }
         return "faux";
@@ -30,16 +37,26 @@ public class JoueurService {
      * @param cible, le joueur choisit par l'actionnaire
      * @return pour l'instant un string, à voir si on peut pas faire mieux par la suite
      */
-    public String comparer(Joueur actionnaire, Joueur cible) {
+    public String comparer(Partie.Cycle cycle,Joueur actionnaire, Joueur cible) {
         int valeurActionnaire = actionnaire.getCarte().getValeur();
         int valeurCible = cible.getCarte().getValeur();
-        if (valeurCible > valeurActionnaire) {
-            return "pouce sur le haut";
+
+        if(valeurActionnaire==Carte.Joker.getValeur()){
+            if(cycle== Partie.Cycle.JOUR){
+                echangerCartesEtRoles(actionnaire,cible);
+                return  "pouce sur le haut";
+            }
+            else{
+                return  "pouce sur le haut";
+            }
         }
-        else if(valeurCible<valeurActionnaire) {
+        if (valeurCible==Carte.Joker.getValeur()) {
             return "pouce sur le bas";
         }
-        else if (valeurCible==11) {
+        else if (valeurCible > valeurActionnaire) {
+            return "pouce sur le haut";
+        }
+        else if(valeurCible < valeurActionnaire) {
             return "pouce sur le bas";
         }
         return "pouce sur le coté";
@@ -55,7 +72,7 @@ public class JoueurService {
      * @return la réponse
      */
     public String tuer(Joueur actionnaire, Joueur cible, int guessValeur, String guessFaction, boolean veutEchanger) {
-        if (cible.getEtat().equals("mort")) {
+        if (cible.getEtat().equals(Joueur.Etat.MORT)) {
             return "rien ne se passe...";
         }
         boolean aBon = (cible.getCarte().getValeur() == guessValeur)
@@ -65,9 +82,9 @@ public class JoueurService {
             return "rien ne se passe...";
         }
 
-        cible.setEtat("mort");
+        cible.setEtat(Joueur.Etat.MORT);
 
-        if (actionnaire.getEtat().equals("vivant")) {
+        if (actionnaire.getEtat().equals(Joueur.Etat.VIVANT)) {
             if (veutEchanger) {
                 echangerCartesEtRoles(actionnaire, cible);
                 return "8 morts 6 bléssés ! Joueur 1 a choisi d'échanger son rôle avec la cible.";
@@ -75,7 +92,7 @@ public class JoueurService {
             return "8 morts 6 bléssés  ! Joueur 1 conserve son rôle.";
         } else {
             echangerCartesEtRoles(actionnaire, cible);
-            actionnaire.setEtat("vivant");
+            actionnaire.setEtat(Joueur.Etat.VIVANT);
             return "8 morts 6 bléssés  ! Joueur 1 ressuscite et prend le rôle de sa cible.";
         }
     }
@@ -92,8 +109,8 @@ public class JoueurService {
      * @return la carte du joueur, s'il a le joker, il meurt
      */
     public Carte regarderSaCarte(Joueur actionnaire) {
-        if (actionnaire.getCarte().getValeur() == 11) {
-            actionnaire.setEtat("mort");
+        if (Objects.equals(actionnaire.getCarte().getValeur(), Carte.Joker.getValeur())) {
+            actionnaire.setEtat(Joueur.Etat.MORT);
         }
         return actionnaire.getCarte();
     }
