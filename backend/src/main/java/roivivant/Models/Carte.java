@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class Carte {
     private Integer valeur;
     private String faction;
+    public static final Carte Joker = new Carte(11, null);
 }
