@@ -1,1 +1,37 @@
-<p>plateau works!</p>
+<!--
+changer cycle
+info c
+changer joueur
+info j
+action 1-4
+init partie
+
+-->
+<div class="plateau-container">
+  <h2>Plateau de Jeu</h2>
+  <div class="cycle">
+    <p>Cycle actuel :{{ partie?.cycle || 'Non démarré' }}</p>
+    <button class="bouton-action" (click)="changerCycle()">Changer Cycle</button>
+  </div>
+
+  <div class="joueur" *ngIf="joueurCourant">
+    <p>Joueur actif : {{ joueurCourant?.pseudo }} ({{ joueurCourant?.etat }})</p>
+    <button class="bouton-action" (click)="changerJoueur()">Changer Joueur</button>
+  </div>
+
+  <div class="action" *ngIf="joueurCourant">
+    <h3>Actions disponibles :</h3>
+    <button class="bouton-action" (click)="actionRegarderCarte()">1. Regarder sa carte</button>
+    <button class="bouton-action" (click)="actionDevinerFaction()">2. Deviner Faction</button>
+    <button class="bouton-action" (click)="actionComparer()">3. Comparer</button>
+    <button class="bouton-action" (click)="actionTuer()">4. Tuer</button>
+  </div>
+
+  <div class="init" *ngIf="">
+    <button class="bouton-init" (click)="initPartie()">Initialiser la partie</button>
+  </div>
+
+  <div class="resultat" *ngIf="messageRetour">
+    <p>{{ messageRetour }}</p>
+  </div>
+</div>
