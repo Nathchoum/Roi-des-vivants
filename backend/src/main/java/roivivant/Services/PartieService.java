@@ -1,5 +1,6 @@
 package roivivant.Services;
 
+import com.sun.jdi.request.StepRequest;
 import org.springframework.stereotype.Service;
 import roivivant.Models.Carte;
 import roivivant.Models.Joueur;
@@ -49,20 +50,20 @@ public class PartieService {
 
     }
 
-    public void jouerDevinerFaction(Joueur actionnaire, Joueur cible, String guess){
-        joueurService.devinerFaction(actionnaire,cible,guess);
+    public String jouerDevinerFaction(Joueur actionnaire, Joueur cible, String guess){
+        return  joueurService.devinerFaction(actionnaire,cible,guess);
     }
 
-    public void jouerComparer(Joueur actionnaire, Joueur cible){
-        joueurService.comparer(actionnaire,cible);
+    public String jouerComparer(Joueur actionnaire, Joueur cible){
+        return joueurService.comparer(actionnaire,cible);
     }
 
-    public void jouerTuer(Joueur actionnaire, Joueur cible, int guessValeur, String guessFaction, boolean veutEchanger){
-        joueurService.tuer(actionnaire, cible, guessValeur, guessFaction, veutEchanger);
+    public String jouerTuer(Joueur actionnaire, Joueur cible, int guessValeur, String guessFaction, boolean veutEchanger){
+        return joueurService.tuer(actionnaire, cible, guessValeur, guessFaction, veutEchanger);
     }
 
-    public void jouerRegarderSaCarte(Joueur actionnaire){
-        joueurService.regarderSaCarte(actionnaire);
+    public Carte jouerRegarderSaCarte(Joueur actionnaire){
+        return joueurService.regarderSaCarte(actionnaire);
     }
 
 }

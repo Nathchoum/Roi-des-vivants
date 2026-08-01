@@ -3,6 +3,7 @@ package roivivant.Models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,7 @@ public class Partie {
         this.joueurs = joueurs;
         this.pile = pile;
         this.tours = 1;
+        ordre=new ArrayList<>();
         for(int i = 0;i<joueurs.size();i++) ordre.add(i);
         Collections.shuffle(ordre);
     }

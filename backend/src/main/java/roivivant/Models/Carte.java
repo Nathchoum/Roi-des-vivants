@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor // constructeur sans argument (pas utile pour l'instant)
 @Data //pour getter et setter
 public class Carte {
-    private int valeur;
+    private Integer valeur;
     private String faction;
 }
