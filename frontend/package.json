@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:backend": "node server.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -17,7 +18,11 @@
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "rxjs": "~7.8.0",
+    "socket.io": "^4.9.0",
+    "socket.io-client": "^4.9.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

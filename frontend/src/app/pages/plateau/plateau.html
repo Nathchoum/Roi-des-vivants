@@ -14,10 +14,23 @@ init partie
     <button class="bouton-action" (click)="changerCycle()">Changer Cycle</button>
   </div>
 
-  <div class="joueur" *ngIf="joueurCourant">
-    <p>Joueur actif : {{ joueurCourant?.pseudo }} ({{ joueurCourant?.etat }})</p>
-    <button class="bouton-action" (click)="changerJoueur()">Changer Joueur</button>
+  <div class="room">
+    <p>Room :{{ partie?.idPartie }}</p>
+    <button class="bouton-action" (click)="changerCycle()">Changer Cycle</button>
   </div>
+  <div class="joueur">
+
+    <p>Tu es : {{ monJoueur?.pseudo || 'anonyme' }}</p>
+    <p>Joueur actif : {{ joueurCourant?.pseudo }} ({{ joueurCourant?.etat }})</p>
+
+    <h3>Joueurs présents</h3>
+    <ul>
+      <li *ngFor="let joueur of partie?.joueurs">
+        {{ joueur.pseudo }} — {{ joueur.etat }}
+      </li>
+    </ul>
+    </div>
+
 
   <div class="action" *ngIf="joueurCourant">
     <h3>Actions disponibles :</h3>
@@ -27,10 +40,14 @@ init partie
     <button class="bouton-action" (click)="actionTuer()">4. Tuer</button>
   </div>
 
-  <div class="init" *ngIf="">
+  <div class="init" >
+    <p></p>
     <button class="bouton-init" (click)="initPartie()">Initialiser la partie</button>
   </div>
-
+  <div class="init" >
+    <p></p>
+    <button class="bouton-rejoindre" (click)="ngOnChanges()">rejoindre la partie</button>
+  </div>
   <div class="resultat" *ngIf="messageRetour">
     <p>{{ messageRetour }}</p>
   </div>

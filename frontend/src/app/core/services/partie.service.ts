@@ -14,28 +14,31 @@ export class PartieService {
   constructor(private http: HttpClient) {}
 
   initPartie(joueurs: Joueur[]): Observable<Partie> {
-    return this.http.post<Partie>(`${this.apiUrl}/initPartie`, joueurs);
+    const pseudos = joueurs.map(joueur => joueur.pseudo);
+    return this.http.post<Partie>(`${this.apiUrl}/initPartie`, pseudos);
   }
 
   devinerFaction(actionnaire: Joueur,cible: Joueur,guess: string): Observable<string> {
-    const params = new HttpParams().set('guess',guess); //pour tout ce qui est requestparam
-    const duo : Joueur[] = [actionnaire,cible]; 
-    return this.http.post(`${this.apiUrl}/devinerFaction`, duo,{
+    const params = new HttpParams().set('guess', guess);
+    const duo: Joueur[] = [actionnaire, cible];
+    return this.http.post(`${this.apiUrl}/devinerFaction`, duo, {
       params,
-      responseType:'text' //car reponse de base en json et pas text
+      responseType: 'text'
     });
   }
+
   comparer(actionnaire:Joueur,cible:Joueur) : Observable<string>{
     const duo : Joueur[] = [actionnaire,cible]; 
     return this.http.post(`${this.apiUrl}/comparer`, duo, {
       responseType:'text'
     });
   }
+
   tuer(actionnaire:Joueur,cible:Joueur,guessValeur:number,guessFaction:string,veutEchanger:boolean) : Observable<string>{
-    const params = new HttpParams();
-    params.set('guessValeur',guessValeur.toString());
-    params.set('guessFaction',guessFaction);
-    params.set('veutEchanger',veutEchanger.toString());
+    let params = new HttpParams();
+    params = params.set('guessValeur', guessValeur.toString());
+    params = params.set('guessFaction', guessFaction);
+    params = params.set('veutEchanger', veutEchanger.toString());
     const duo : Joueur[] = [actionnaire,cible]; 
     return this.http.post(`${this.apiUrl}/tuer`, duo,{
       params,

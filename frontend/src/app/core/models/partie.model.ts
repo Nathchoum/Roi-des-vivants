@@ -3,4 +3,5 @@ export interface Partie {
   idPartie: string;
   cycle: string;
   joueurs: Joueur[];
+  joueurActifIndex?: number;
 }
