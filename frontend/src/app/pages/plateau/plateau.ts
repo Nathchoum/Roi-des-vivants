@@ -7,7 +7,8 @@ import { Etat, Joueur } from '../../core/models/joueur.model';
 import { Carte } from '../../core/models/carte.model';
 import { PartieService } from '../../core/services/partie.service';
 import { JoueurService } from '../../core/services/joueur.service';
-import { GameSyncService } from '../../core/services/game-sync.service';
+import { RoomService } from '../../core/services/room.service';
+import { Room } from '../../core/models/room.model';
 
 @Component({
   selector: 'app-plateau',
@@ -20,6 +21,7 @@ import { GameSyncService } from '../../core/services/game-sync.service';
 export class PlateauComponent implements OnInit {
 
   partie?: Partie;
+  room?:Room;
   joueurCourant?: Joueur;
   joueurCible?: Joueur;
   monJoueur?: Joueur;
@@ -35,8 +37,8 @@ export class PlateauComponent implements OnInit {
 
   constructor(
     private partieService: PartieService,
+    private roomService: RoomService,
     private joueurService: JoueurService,
-    private syncService: GameSyncService
   ) {}
 
 
@@ -44,28 +46,71 @@ export class PlateauComponent implements OnInit {
     // Ensure a per-browser unique player
     const local = this.joueurService.getOrCreateLocalPlayer();
     this.monJoueur = local;
-
-    // subscribe to sync updates (cross-tab and cross-browser)
-    this.syncService.gameState$.subscribe((p) => {
-      if (p) {
-        this.appliquerPartieMiseAJour(p as Partie);
-      }
-    });
-
-    this.syncService.stateRequested$.subscribe(() => {
-      if (this.partie) this.syncService.broadcastState(this.partie);
-    });
-
-    this.syncService.requestCurrentState();
   }
-  ngOnChanges():void {
-    this.syncService.gameState$.subscribe((p) => {
-      if (p) {
-        this.appliquerPartieMiseAJour(p as Partie);
-      }
-    });
+  rejoindreRoom() : void{ //rejoindre une room qui existe
+    this.ajouterJoueur(this.joueurService.getOrCreateLocalPlayer());
   }
-  initPartie(): Partie | undefined {
+
+  initRoom() : void{
+    const local = this.joueurService.getOrCreateLocalPlayer();
+    const joueursInitiaux: Joueur[] = [
+      { ...local, etat: Etat.VIVANT }
+    ];
+
+    this.roomService.initRoom().subscribe({
+      next: (roomCree) => {
+        this.room = roomCree;
+        this.indexJoueurActif = 0;
+        this.monJoueur = local;
+        this.messageRetour = 'RoomInit!';
+      },
+      error: (err) => console.error('Erreur initPartie', err)
+    });
+    this.ajouterJoueur(local)
+  }
+  /*
+  fonction qui creer une room sans init de partie
+  fonction qui permet de rejoindre une room GOOD
+  fonction qui permet d'ajouter un joueur a une room
+  fonction qui permet de lancer une partie en étant dans une room
+  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  initPartie(): Partie | undefined { //creer partie
     const local = this.joueurService.getOrCreateLocalPlayer();
 
     const joueursInitiaux: Joueur[] = [
@@ -79,31 +124,14 @@ export class PlateauComponent implements OnInit {
         this.joueurCourant = this.partie.joueurs[this.indexJoueurActif];
         this.monJoueur = this.joueurCourant;
         this.messageRetour = 'Partie initialisée et cartes distribuées !';
-        this.syncService.broadcastState(this.partie);
-      },
+        },
       error: (err) => console.error('Erreur initPartie', err)
     });
     return this.partie;
   }
 
   appliquerPartieMiseAJour(partie: Partie): void {
-    this.partie = partie;
-    const currentPlayer = this.joueurService.getLocalPlayer();
-    const existing = partie.joueurs?.find((joueur) => joueur.pseudo === currentPlayer?.pseudo);
-
-    if (existing) {
-      this.monJoueur = existing;
-    } else if (currentPlayer) {
-      partie.joueurs = [...(partie.joueurs ?? []), { ...currentPlayer, etat: Etat.VIVANT }];
-      this.monJoueur = { ...currentPlayer, etat: Etat.VIVANT };
-    }
-
-    const maxIndex = Math.max((partie.joueurs?.length ?? 1) - 1, 0);
-    const idx = typeof partie.joueurActifIndex === 'number' ? partie.joueurActifIndex : this.indexJoueurActif;
-    this.indexJoueurActif = Math.min(Math.max(idx, 0), maxIndex);
-    this.joueurCourant = partie.joueurs[this.indexJoueurActif] ?? partie.joueurs[0];
-    this.messageRetour = this.messageRetour || `Synchro réussie ! Tour de ${this.joueurCourant?.pseudo}`;
-    console.log(this.partie)
+    
   }
 
   changerJoueur(): void {
@@ -132,7 +160,6 @@ export class PlateauComponent implements OnInit {
         } else {
           this.messageRetour = `Ta carte : Valeur ${carte.valeur}, Faction ${carte.faction}`;
         }
-        if (this.partie) this.syncService.broadcastState(this.partie);
       }
     });
   }
@@ -145,7 +172,6 @@ export class PlateauComponent implements OnInit {
     this.partieService.devinerFaction(this.joueurCourant, this.joueurCible, this.guessFactionSimple).subscribe({
       next: (res) => {
         this.messageRetour = `Résultat Deviner Faction : ${res}`;
-        if (this.partie) this.syncService.broadcastState(this.partie);
       }
     });
   }
@@ -159,7 +185,6 @@ export class PlateauComponent implements OnInit {
     this.partieService.comparer(this.joueurCourant, this.joueurCible).subscribe({
       next: (res) => {
         this.messageRetour = `Résultat Comparaison : ${res}`;
-        if (this.partie) this.syncService.broadcastState(this.partie);
       }
     });
   }
@@ -179,8 +204,19 @@ export class PlateauComponent implements OnInit {
     ).subscribe({
       next: (res) => {
         this.messageRetour = res;
-        if (this.partie) this.syncService.broadcastState(this.partie);
       }
     });
+  }
+
+
+  /*
+  
+  FONCTIONS UTILS
+  
+  */
+
+  ajouterJoueur(joueur:Joueur):void{
+    if(this.room==undefined) return;
+    this.room.joueurs = [...(this.room.joueurs ?? []), { ...joueur, etat: Etat.VIVANT }]
   }
 }

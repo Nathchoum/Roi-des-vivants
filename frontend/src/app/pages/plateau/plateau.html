@@ -14,10 +14,7 @@ init partie
     <button class="bouton-action" (click)="changerCycle()">Changer Cycle</button>
   </div>
 
-  <div class="room">
-    <p>Room :{{ partie?.idPartie }}</p>
-    <button class="bouton-action" (click)="changerCycle()">Changer Cycle</button>
-  </div>
+
   <div class="joueur">
 
     <p>Tu es : {{ monJoueur?.pseudo || 'anonyme' }}</p>
@@ -25,7 +22,7 @@ init partie
 
     <h3>Joueurs présents</h3>
     <ul>
-      <li *ngFor="let joueur of partie?.joueurs">
+      <li *ngFor="let joueur of room?.joueurs">
         {{ joueur.pseudo }} — {{ joueur.etat }}
       </li>
     </ul>
@@ -40,13 +37,17 @@ init partie
     <button class="bouton-action" (click)="actionTuer()">4. Tuer</button>
   </div>
 
-  <div class="init" >
+   <div class="init" >
     <p></p>
-    <button class="bouton-init" (click)="initPartie()">Initialiser la partie</button>
+    <button class="bouton-init" (click)="initRoom()">Initialiser la room fdp </button>
   </div>
   <div class="init" >
     <p></p>
-    <button class="bouton-rejoindre" (click)="ngOnChanges()">rejoindre la partie</button>
+    <button class="bouton-rejoindre" (click)="rejoindreRoom()">rejoindre room</button>
+  </div>
+  <div class="init" >
+    <p></p>
+    <button class="bouton-init" (click)="initPartie()">Initialiser la partie</button>
   </div>
   <div class="resultat" *ngIf="messageRetour">
     <p>{{ messageRetour }}</p>

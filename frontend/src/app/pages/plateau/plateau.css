@@ -1,0 +1,6 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #2b2e36; /* Applique le fond à tout le composant */
+
+}

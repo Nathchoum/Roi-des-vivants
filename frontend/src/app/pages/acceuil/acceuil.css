@@ -1,0 +1,9 @@
+.box{
+    background-color: rgb(63, 78, 78);
+}
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #1a1d24; /* Applique le fond à tout le composant */
+
+}

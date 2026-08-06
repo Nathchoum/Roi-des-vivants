@@ -1,0 +1,72 @@
+<!---->
+<div class="box">
+  <h3>Créer ou rejoindre une partie</h3>
+
+
+  @if (!p2pService.peerId() && !p2pService.estConnecte()) {<!--Partie ou il n'est pas dans une room-->
+    <button (click)="createLobby()">Créer une partie</button>
+    <p>— OU —</p>
+    <div>
+      <input #codeInput type="text" placeholder="Entrer un code à 6 caractères (e.g. X7K29A)" maxlength="6">
+      <button (click)="p2pService.joinRoom(codeInput.value)">
+        Rejoindre la partie
+      </button>
+    </div>
+    <div> 
+      <input #pseudoInput type="text" placeholder="Pseudo" maxlength="6" (keyup.enter)="p2pService.setPseudo(pseudoInput.value)">
+    </div>
+  }
+
+
+
+  <!-- 2. Vue du Lobby si le joueur EST DANS UNE ROOM -->
+  @if (p2pService.peerId() || p2pService.estConnecte()) {
+    <p>Code de la partie: <strong><mark>{{ p2pService.roomCode() }}</mark></strong>
+    <button (click)="copyCode()">
+      {{ isCodeCopied() ? 'Code copié' : 'Copier le code' }}
+    </button>
+    </p>
+    
+    <div class="box">
+      <h3>
+        Joueurs connectés
+        <span>({{ p2pService.joueursPresents().size }} Players)</span>
+      </h3>
+      <ul class="peer-list">
+        @for (pseudo of p2pService.joueursPresents().values(); track $index) {
+          <li class="peer-item">
+            <code>{{ pseudo }}</code>
+            <button>
+              Modifier
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Le bouton de partage est maintenant DANS le bloc du lobby -->
+    <p>
+      Partager le lien: 
+      <button (click)="copyShareLink()">
+        {{ isLinkCopied() ? 'Lien copié' : 'Copier le lien' }}
+      </button>
+    </p>
+    @if(p2pService.estHost()){
+      <button (click)="p2pService.commencerPartie()">
+        {{ 'Commencer la partie' }}
+      </button>
+    }
+  } 
+  @else {
+    <p class="empty-state">Aucun pair connecté. Créez ou rejoignez une room pour commencer.</p>
+  }
+
+  <!-- Message d'erreur -->
+  @if (p2pService.connectionError()) {
+    <p style="color: red;">{{ p2pService.connectionError() }}</p>
+  }
+
+  @if(p2pService.partieCommencee()){
+    <p>Commencée</p>
+  }
+</div>
